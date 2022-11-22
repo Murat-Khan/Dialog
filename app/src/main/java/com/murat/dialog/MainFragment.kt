@@ -6,16 +6,21 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+
 
 
 class MainFragment : Fragment() {
@@ -25,7 +30,9 @@ class MainFragment : Fragment() {
     private lateinit var image: ImageView
     private lateinit var deleteImage: ImageView
     lateinit var button: Button
-
+    private lateinit var logButton: Button
+    lateinit var userName : TextView
+    lateinit var bottomShit : Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,9 +48,12 @@ class MainFragment : Fragment() {
 
         pref = Pref(requireContext())
 
+        logButton = view.findViewById(R.id.btn_login)
+        userName = view.findViewById(R.id.name)
         image = view.findViewById(R.id.image)
         deleteImage = view.findViewById(R.id.delete_image_button)
          button = view.findViewById(R.id.button)
+        bottomShit= view.findViewById(R.id.bottom_shit)
         button.setOnClickListener {
             gallery.launch(arrayOf("image/*"))
             button.text = "Поменять фото"
@@ -52,10 +62,34 @@ class MainFragment : Fragment() {
         image.loadImage(pref.getImage())
         deleteImage.setOnClickListener {
             showConfirmDialog()
-
-
         }
 
+        logButton.setOnClickListener {
+            showLoginDialog()
+        }
+        userName.text = pref.getName()
+
+        bottomShit.setOnClickListener {
+            showDialog()
+        }
+
+    }
+
+    private fun showDialog(){
+
+        val dialog = Dialog(requireContext())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.bottom_shit_layout)
+
+        val editLayout : LinearLayout = dialog.findViewById(R.id.edit_layout)
+        val shareLayout : LinearLayout = dialog.findViewById(R.id.share_layout)
+        val uploadLayout : LinearLayout = dialog.findViewById(R.id.upload_layout)
+        val printLayout : LinearLayout = dialog.findViewById(R.id.print_layout)
+        dialog.show()
+        dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT    )
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+        dialog.window?.setGravity(Gravity.BOTTOM)
 
 
 
@@ -66,6 +100,7 @@ class MainFragment : Fragment() {
         val myDialog = Dialog(requireContext())
         myDialog.setContentView(dialogBinding)
         myDialog.setCancelable(true)
+
         myDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val delete = dialogBinding.findViewById<TextView>(R.id.alert_delete)
         delete.setOnClickListener {
@@ -74,13 +109,29 @@ class MainFragment : Fragment() {
 
             myDialog.dismiss()
         }
-
-
         val cancel = dialogBinding.findViewById<TextView>(R.id.alert_cancel)
         cancel.setOnClickListener { myDialog.dismiss() }
-
-
         myDialog.show()
+    }
+
+    private fun showLoginDialog() {
+        val dialogBinding = layoutInflater.inflate(R.layout.login, null)
+        val myDialog = Dialog(requireContext())
+        myDialog.setContentView(dialogBinding)
+        myDialog.setCancelable(true)
+        myDialog.window?.setBackgroundDrawable(ColorDrawable(Color.WHITE))
+        val etUserName = dialogBinding.findViewById<EditText>(R.id.et_username)
+
+        val btnLogin = dialogBinding.findViewById<Button>(R.id.btn_login)
+        btnLogin.setOnClickListener {
+            val uName = etUserName.text.toString()
+            pref.saveName(uName)
+            userName.text = uName
+
+
+            myDialog.dismiss()}
+        myDialog.show()
+
 
 
     }

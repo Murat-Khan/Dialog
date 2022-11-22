@@ -3,7 +3,7 @@ package com.murat.dialog
 import android.content.Context
 import android.content.SharedPreferences
 
-class Pref(private val context: Context) {
+class Pref(private val context: Context){
     private var pref: SharedPreferences = context.getSharedPreferences(PREF_NAME,
         Context.MODE_PRIVATE
     )
@@ -23,13 +23,23 @@ class Pref(private val context: Context) {
         return pref.getString(IMAGE_PROFILE, "")
     }
 
+    fun getName():String?{
+return pref.getString(NAME_PROFILE,"")
+    }
+
+    fun saveName(name:String){
+        pref.edit().putString(NAME_PROFILE,name).apply()
+    }
 
 
 
     companion object {
-        private const val PREF_NAME = "pref.task"
-        private const val IMAGE_PROFILE = "image.profile"
+      private  const val PREF_NAME = "pref.task"
+       private const val IMAGE_PROFILE = "image.profile"
+       private const val NAME_PROFILE = "name.profile"
+
     }
+
 
 
 }
