@@ -20,7 +20,7 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-
+import com.google.android.material.bottomsheet.BottomSheetDialog
 
 
 class MainFragment : Fragment() {
@@ -32,7 +32,8 @@ class MainFragment : Fragment() {
     lateinit var button: Button
     private lateinit var logButton: Button
     lateinit var userName : TextView
-    lateinit var bottomShit : Button
+    private lateinit var bottomShit : Button
+    lateinit var bottomShitDialog : BottomSheetDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,9 +71,21 @@ class MainFragment : Fragment() {
         userName.text = pref.getName()
 
         bottomShit.setOnClickListener {
-            showDialog()
+           requireActivity().supportFragmentManager.beginTransaction()
+               .replace(R.id.dialog_fr,AnimationFragment()).addToBackStack(null).commit()
         }
 
+    }
+
+    private fun showBottomShit(){
+            var dialog = layoutInflater.inflate(R.layout.bottom_shit_layout,null)
+
+        bottomShitDialog = BottomSheetDialog(requireContext(), R.style.BottomShitDialogThem)
+        bottomShitDialog.setContentView(dialog)
+
+        bottomShitDialog.show()
+        bottomShitDialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT)
+        bottomShitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
     }
 
     private fun showDialog(){
@@ -90,9 +103,6 @@ class MainFragment : Fragment() {
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
         dialog.window?.setGravity(Gravity.BOTTOM)
-
-
-
     }
 
     private fun showConfirmDialog() {
@@ -127,17 +137,11 @@ class MainFragment : Fragment() {
             val uName = etUserName.text.toString()
             pref.saveName(uName)
             userName.text = uName
-
-
             myDialog.dismiss()}
         myDialog.show()
-
-
-
     }
 
-
-    private var gallery: ActivityResultLauncher<Array<String>> =
+    private  var gallery: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(
             ActivityResultContracts.OpenDocument(),
             ActivityResultCallback<Uri?> { result ->
